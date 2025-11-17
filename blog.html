@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Data Communication & Networks — Animated Blog</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --card: #0f1724;
+        --accent: #00b4d8;
+        --muted: #9aa6b2;
+        --glass: rgba(255, 255, 255, 0.04);
+        --maxw: 1100px;
+        --glass-2: rgba(255, 255, 255, 0.02);
+        --soft-shadow: 0 6px 20px rgba(2, 6, 23, 0.6);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+        background: linear-gradient(180deg, var(--bg), #071023 120%);
+        color: #e6f0f6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: var(--maxw);
+        margin: 48px auto;
+        padding: 24px;
+      }
+
+      /* Header / Nav */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: var(--soft-shadow);
+      }
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #0077b6);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: #021224;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+      }
+      nav {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+      }
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      nav a:hover {
+        color: var(--accent);
+      }
+
+      /* Hero */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 28px;
+        margin-top: 28px;
+      }
+      .hero-card {
+        background: linear-gradient(180deg, var(--card), rgba(6, 10, 18, 0.6));
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: var(--soft-shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+      }
+      .hero p {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      .cta {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--accent), #0077b6);
+        color: #021224;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      /* Animated network canvas */
+      .net-canvas {
+        position: absolute;
+        right: -120px;
+        top: -40px;
+        width: 560px;
+        height: 320px;
+        pointer-events: none;
+      }
+      .node {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, #bff1ff, #00b4d8);
+        box-shadow: 0 0 20px rgba(0, 196, 255, 0.18);
+      }
+      .link {
+        position: absolute;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 180, 216, 0.6),
+          rgba(0, 119, 182, 0.6)
+        );
+        transform-origin: left center;
+        opacity: 0.7;
+      }
+      .packet {
+        position: absolute;
+        width: 10px;
+        height: 6px;
+        border-radius: 6px;
+        background: #caf0f8;
+        box-shadow: 0 4px 14px rgba(0, 180, 216, 0.18);
+        transform: translate(-6px, -3px);
+      }
+
+      /* Setup a few nodes and link animations using CSS keyframes */
+      /* Node positions */
+      .n1 {
+        left: 32px;
+        top: 34px;
+        animation: pop 3s ease-in-out infinite;
+      }
+      .n2 {
+        left: 210px;
+        top: 16px;
+        animation: pop 2.6s ease-in-out infinite 0.2s;
+      }
+      .n3 {
+        left: 380px;
+        top: 52px;
+        animation: pop 3.6s ease-in-out infinite 0.6s;
+      }
+      .n4 {
+        left: 120px;
+        top: 160px;
+        animation: pop 2.8s ease-in-out infinite 0.8s;
+      }
+      .n5 {
+        left: 340px;
+        top: 190px;
+        animation: pop 3.2s ease-in-out infinite 1s;
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(0.85);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.18);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0.85);
+          opacity: 0.9;
+        }
+      }
+
+      /* packet travel animations (simulated along horizontal lines) */
+      .p1 {
+        left: 40px;
+        top: 50px;
+        animation: travel1 3s linear infinite;
+      }
+      .p2 {
+        left: 200px;
+        top: 70px;
+        animation: travel2 3.4s linear infinite 0.4s;
+      }
+      .p3 {
+        left: 120px;
+        top: 170px;
+        animation: travel3 3.6s linear infinite 0.2s;
+      }
+
+      @keyframes travel1 {
+        0% {
+          transform: translateX(0) rotate(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(320px) rotate(10deg);
+        }
+        90% {
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0) rotate(0);
+          opacity: 0;
+        }
+      }
+      @keyframes travel2 {
+        0% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        6% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(160px);
+        }
+        90% {
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+      }
+      @keyframes travel3 {
+        0% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        8% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(220px);
+        }
+        90% {
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+      }
+
+      /* Articles grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 22px;
+      }
+      .card {
+        background: var(--glass);
+        padding: 18px;
+        border-radius: 12px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 24px rgba(3, 8, 18, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        overflow: hidden;
+        position: relative;
+      }
+      .card h3 {
+        margin: 6px 0 8px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .card::after {
+        content: "";
+        position: absolute;
+        left: -60px;
+        bottom: -60px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(0, 180, 216, 0.08),
+          transparent 20%
+        );
+        transform: rotate(-15deg);
+      }
+      .card:hover {
+        transform: translateY(-6px);
+        transition: transform 0.28s;
+      }
+
+      /* timeline */
+      .timeline {
+        margin-top: 28px;
+        display: flex;
+        gap: 20px;
+      }
+      .timeline .line {
+        width: 4px;
+        background: linear-gradient(180deg, var(--accent), #0077b6);
+        border-radius: 4px;
+        position: relative;
+      }
+      .event {
+        flex: 1;
+        background: var(--glass-2);
+        padding: 16px;
+        border-radius: 12px;
+      }
+      .pulse {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        position: absolute;
+        left: -4px;
+        top: 6px;
+        box-shadow: 0 0 24px rgba(0, 180, 216, 0.24);
+        animation: pulse 2.6s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(0.8);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0.8);
+          opacity: 0.8;
+        }
+      }
+
+      /* footer */
+      footer {
+        margin-top: 40px;
+        color: var(--muted);
+        text-align: center;
+        padding: 18px;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .hero {
+          grid-template-columns: 1fr 340px;
+        }
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 720px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .net-canvas {
+          display: none;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .wrap {
+          padding: 14px;
+        }
+      }
+      /* Extra animations added */
+      body {
+        background-size: 400% 400%;
+        animation: bgShift 18s ease infinite;
+      }
+      @keyframes bgShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Floating hero cards */
+      .hero-card {
+        animation: floatUp 6s ease-in-out infinite;
+      }
+      @keyframes floatUp {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* Glowing card hover */
+      .card:hover {
+        box-shadow: 0 0 18px rgba(0, 180, 216, 0.35),
+          0 6px 30px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Additional packet animations */
+      .p4 {
+        left: 60px;
+        top: 210px;
+        animation: travel4 4s linear infinite 0.3s;
+      }
+      .p5 {
+        left: 300px;
+        top: 120px;
+        animation: travel5 3.2s linear infinite 0.5s;
+      }
+
+      @keyframes travel4 {
+        0% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(260px);
+        }
+        90% {
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes travel5 {
+        0% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        15% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(-180px);
+        }
+        90% {
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+      }
+
+      /* Pulse for all nodes */
+      .node {
+        animation: pulseNode 4s ease-in-out infinite;
+      }
+
+      @keyframes pulseNode {
+        0% {
+          box-shadow: 0 0 10px rgba(0, 180, 216, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 26px rgba(0, 180, 216, 0.45);
+        }
+        100% {
+          box-shadow: 0 0 10px rgba(0, 180, 216, 0.2);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <div class="logo">DC</div>
+          <div>
+            <div style="font-weight: 700">DataComm Blog</div>
+            <div style="font-size: 12px; color: var(--muted)">
+              Animations to visualize networks
+            </div>
+          </div>
+        </div>
+        <nav>
+          <a href="#">Home</a>
+          <a href="#articles">Articles</a>
+          <a href="#timeline">Timeline</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <div class="hero">
+        <div class="hero-card">
+          <h1>Understanding Data Communication & Networks</h1>
+          <p>
+            Animated visuals make core networking concepts intuitive — packets,
+            links, routing, and latency. Explore bite-sized articles below and
+            watch the network come alive.
+          </p>
+          <a class="cta" href="#articles">Explore Articles</a>
+
+          <!-- decorative animated network -->
+          <div class="net-canvas" aria-hidden="true">
+            <div class="node n1"></div>
+            <div class="node n2"></div>
+            <div class="node n3"></div>
+            <div class="node n4"></div>
+            <div class="node n5"></div>
+
+            <!-- packets -->
+            <div class="packet p1"></div>
+            <div class="packet p2"></div>
+            <div class="packet p3"></div>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h3>Quick Concepts</h3>
+          <ul style="margin: 8px 0 0; padding-left: 18px; color: var(--muted)">
+            <li><strong>Packet</strong> — a small unit of data.</li>
+            <li><strong>Bandwidth</strong> — capacity of a link.</li>
+            <li><strong>Latency</strong> — delay between sender & receiver.</li>
+            <li><strong>Routing</strong> — path selection across a network.</li>
+          </ul>
+          <div style="margin-top: 12px; color: var(--muted); font-size: 13px">
+            Tip: Hover cards to see micro-interactions.
+          </div>
+        </aside>
+      </div>
+
+      <section id="articles" class="grid" aria-label="articles">
+        <article class="card">
+          <h3>1. What is a Packet?</h3>
+          <p>
+            Packets contain headers and payloads. Visualize them as envelopes
+            traveling between nodes; headers guide delivery, payload carries the
+            content.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>2. How Routing Works</h3>
+          <p>
+            Routers learn network topology and choose best paths. Routing
+            protocols exchange small messages to keep the network updated.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>3. TCP vs UDP</h3>
+          <p>
+            TCP guarantees delivery (retransmits lost packets). UDP is faster
+            but unreliable — used for streaming where speed matters.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>4. Bandwidth & Throughput</h3>
+          <p>
+            Bandwidth is theoretical maximum; throughput is actual data
+            successfully delivered over time, affected by congestion and loss.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>5. Latency & Jitter</h3>
+          <p>
+            Latency is round-trip time. Jitter is variation in packet arrival —
+            critical for real-time applications like VoIP.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>6. Error Detection</h3>
+          <p>
+            Checksums and CRCs help detect corrupted packets so systems can
+            request retransmission or discard data.
+          </p>
+        </article>
+      </section>
+
+      <section id="timeline" class="timeline">
+        <div
+          class="line"
+          style="padding: 12px 18px; border-radius: 12px; position: relative"
+        >
+          <div class="pulse"></div>
+        </div>
+        <div class="event">
+          <strong>Physical Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            Cables, signals, modulation. How bits become real-world signals.
+          </div>
+        </div>
+        <div class="event">
+          <strong>Data Link</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            Frames, MAC addresses, and switching — reliable neighbor-to-neighbor
+            transfer.
+          </div>
+        </div>
+        <div class="event">
+          <strong>Network Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            IP addresses & routing: moving packets across networks.
+          </div>
+        </div>
+      </section>
+
+      <!-- Extended OSI Layers -->
+      <section id="extended-layers" class="timeline" style="margin-top: 32px">
+        <div
+          class="line"
+          style="padding: 12px 18px; border-radius: 12px; position: relative"
+        >
+          <div class="pulse"></div>
+        </div>
+        <div class="event">
+          <strong>Transport Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            End-to-end delivery, segmentation, flow control (TCP/UDP).
+          </div>
+        </div>
+        <div class="event">
+          <strong>Session Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            Maintains sessions between hosts; handles dialogue control &
+            synchronization.
+          </div>
+        </div>
+        <div class="event">
+          <strong>Presentation Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            Encryption, compression, formatting — translator of data.
+          </div>
+        </div>
+        <div class="event">
+          <strong>Application Layer</strong>
+          <div style="color: var(--muted); font-size: 13px; margin-top: 6px">
+            Interfaces with apps like HTTP, DNS, FTP, mail, etc.
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
